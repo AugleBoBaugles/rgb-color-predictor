@@ -88,10 +88,8 @@
         await predict();
         window.requestAnimationFrame(loop);
       }
-
-      redCount = 0;
-      blueCount = 0;
-      tealCount = 0;
+      
+      backgroundCount = 0;
 
       async function predict() {
         const prediction = await model.predict(webcam.canvas);
@@ -117,31 +115,25 @@
           labelContainer.childNodes[i].innerHTML = classPrediction;
         }
 
+        const messageEl = document.getElementById("message");
         if (topClass.className === "Marker Red" && topClass.probability > 0.8) {
           document.body.style.backgroundColor = "#fe5858"; // red
-        } else if (
-          topClass.className === "Marker Blue" &&
-          topClass.probability > 0.8
-        ) {
-          document.body.style.backgroundColor = "#486dff"; // blue
-        } else if (
-          topClass.className === "Marker Teal" &&
-          topClass.probability > 0.8
-        ) {
-          document.body.style.backgroundColor = "#57ffe6"; // teal
-        } else {
-          document.body.style.backgroundColor = "white";
-        }
-
-        const messageEl = document.getElementById("message");
-        if (topClass.className === "Marker Red" && topClass.probability > 0.85) {
+          backgroundCount = 0;
           messageEl.textContent = "Red";
-        } else if(topClass.className === "Marker Blue" && topClass.probability > 0.85) {
+        } else if(topClass.className === "Marker Blue" && topClass.probability > 0.8) {
           messageEl.textContent = "Blue";
-        } else if(topClass.className === "Marker Teal" && topClass.probability > 0.85) {
+          backgroundCount = 0;
+          document.body.style.backgroundColor = "#486dff"; // blue
+        } else if(topClass.className === "Marker Teal" && topClass.probability > 0.8 ) {
+          backgroundCount = 0;
           messageEl.textContent = "Teal";
-        } else {
+          document.body.style.backgroundColor = "#57ffe6"; // teal
+        } else if (backgroundCount > 10){
             messageEl.textContent = "";
+            document.body.style.backgroundColor = "white";
+        } else if (topClass.className === "Background") {
+            backgroundCount++;
+            
         }
       }
 
