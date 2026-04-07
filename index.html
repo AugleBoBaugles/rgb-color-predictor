@@ -85,27 +85,38 @@
         }
 
         async function predict() {
-    const prediction = await model.predict(webcam.canvas);
+            const prediction = await model.predict(webcam.canvas);
 
-        // Find the class with the highest probability
-        let topClass = prediction[0];
-        for (let i = 1; i < prediction.length; i++) {
-            if (prediction[i].probability > topClass.probability) {
-                topClass = prediction[i];
+            // Find the class with the highest probability
+            let topClass = prediction[0];
+            for (let i = 1; i < prediction.length; i++) {
+                if (prediction[i].probability > topClass.probability) {
+                    topClass = prediction[i];
+                }
             }
-        }
 
-        // topClass.className is the winning label
-        // topClass.probability is how confident the model is
-        console.log(topClass.className, topClass.probability);
+            // topClass.className is the winning label
+            // topClass.probability is how confident the model is
+            console.log(topClass.className, topClass.probability);
 
-        // Update the display
-        for (let i = 0; i < maxPredictions; i++) {
-            const classPrediction =
-                prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-            labelContainer.childNodes[i].innerHTML = classPrediction;
+            // Update the display
+            for (let i = 0; i < maxPredictions; i++) {
+                const classPrediction =
+                    prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                labelContainer.childNodes[i].innerHTML = classPrediction;
+            }
+
+            if (topClass.className === "Marker Red" && topClass.probability > 0.8) {
+                document.body.style.backgroundColor = "#fe5858"; // red
+            } else if (topClass.className === "Marker Blue" && topClass.probability > 0.8) {
+                document.body.style.backgroundColor = "#486dff"; // blue
+            } else if (topClass.className === "Marker Teal" && topClass.probability > 0.8) {
+                document.body.style.backgroundColor = "#57ffe6"; // teal
+            } else {
+                document.body.style.backgroundColor = "white";
+            }
+
         }
-    }
 
         async function toggleCamera() {
             const button = document.getElementById("toggleButton");
