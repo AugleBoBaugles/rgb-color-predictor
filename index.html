@@ -11,10 +11,33 @@
         margin: 2rem auto;
         padding: 0 1rem;
         text-align: center;
+        transition: background-color 0.4s ease;
+        background-color: #f7f7f7;
+      }
+      .subtitle {
+        color: #555;
+        margin-top: -0.5rem;
+        margin-bottom: 1.5rem;
+      }
+      #message {
+        margin: 1rem auto;
+        padding: 1rem;
+        max-width: 300px;
+        font-size: 1.4rem;
+        font-weight: bold;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.75);
+      }
+      #webcam-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 1rem 0;
       }
       #webcam-container canvas {
         display: none;
-        border-radius: 8px;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
       }
       #webcam-container.active canvas {
         display: block;
@@ -42,7 +65,8 @@
     </style>
   </head>
   <body>
-    <h1>My Teachable Machine App</h1>
+    <h1>Magic Marker</h1>
+    <p class="subtitle">Hold up a red, blue, or teal marker to change the page.</p>
 
     <button id="toggleButton" onclick="toggleCamera()">Start Camera</button>
 
@@ -58,6 +82,7 @@
 
       let model, webcam, labelContainer, maxPredictions;
       let isRunning = false;
+      let backgroundCount = 0;
 
       async function init() {
         model = await tmImage.load(URL + "model.json", URL + "metadata.json");
@@ -88,8 +113,6 @@
         await predict();
         window.requestAnimationFrame(loop);
       }
-      
-      backgroundCount = 0;
 
       async function predict() {
         const prediction = await model.predict(webcam.canvas);
@@ -119,18 +142,18 @@
         if (topClass.className === "Marker Red" && topClass.probability > 0.8) {
           document.body.style.backgroundColor = "#fe5858"; // red
           backgroundCount = 0;
-          messageEl.textContent = "Red";
+          messageEl.textContent = "Red Detected";
         } else if(topClass.className === "Marker Blue" && topClass.probability > 0.8) {
-          messageEl.textContent = "Blue";
+          messageEl.textContent = "Blue Detected";
           backgroundCount = 0;
           document.body.style.backgroundColor = "#486dff"; // blue
         } else if(topClass.className === "Marker Teal" && topClass.probability > 0.8 ) {
           backgroundCount = 0;
-          messageEl.textContent = "Teal";
+          messageEl.textContent = "Teal Detected";
           document.body.style.backgroundColor = "#57ffe6"; // teal
         } else if (backgroundCount > 10){
-            messageEl.textContent = "";
-            document.body.style.backgroundColor = "white";
+            messageEl.textContent = "???";
+            document.body.style.backgroundColor = "#f7f7f7";
         } else if (topClass.className === "Background") {
             backgroundCount++;
             
